@@ -90,7 +90,7 @@ With the wireframe as a foundation, the final design phase introduced:
 - **Reusable component library** — modular, scalable UI components that reflect the final product's structure
 - **Interactive prototype** — a clickable prototype simulating real page transitions and component interactions
 
-🎨 **[View the Final Design & Prototype on Figma →](https://www.figma.com/file/F57MNIYm7Wb30YVrEw2Byt/Capstone---Applying-Design-Fundamentals%2F-Prototype?type=design&node-id=339-609&mode=design&t=7ROLiOxixlKHa8LI-0)**
+🎨 **[View the Final Design & Prototype on Figma →](https://www.figma.com/design/4Z2MGIOkuFzYdwtegw9pTb/Little-lemon?node-id=2-1242&t=LFAi46lUFFEZ3nRp-1)**
 
 ---
 
