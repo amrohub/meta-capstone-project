@@ -24,7 +24,7 @@
 
 | | |
 |---|---|
-| **URL** | [https://meta-capstone-project-three.vercel.app/](https://meta-capstone-project-three.vercel.app/) |
+| **URL** | [https://meta-capstone-project-three.vercel.app/](https://meta-capstone-project-six.vercel.app/) |
 | **Hosting** | Vercel |
 
 > 📸 *Screenshot preview — visit the live link above for the full interactive experience.*
