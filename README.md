@@ -72,6 +72,7 @@ After completing the booking details, users must be able to:
 ## 🎨 UX & UI Planning
 
 ### Wireframe
+<img width="1920" height="6417" alt="Little-lemon-wireframe" src="https://github.com/user-attachments/assets/43a92dc4-9366-4f83-ba10-dcebbd9d2822" />
 
 The design process began with a low-fidelity wireframe covering all key pages and UI components. At this stage, the focus was placed entirely on layout, information hierarchy, and user flow — without any colours, imagery, or stylistic detail. This phase also served as an opportunity to map out the functional requirements identified during problem analysis and to incorporate insights drawn from real user feedback.
 
