@@ -4,7 +4,66 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>my-react-app</title>
+
+    <!-- Primary Meta -->
+    <title>Little Lemon | Mediterranean Restaurant · Chicago</title>
+    <meta name="description" content="A family-owned Mediterranean restaurant in the heart of Chicago. Rooted in Italian, Greek & Turkish tradition — reimagined for a modern appetite. Reserve your table today." />
+    <meta name="keywords" content="Little Lemon, Mediterranean restaurant, Chicago restaurant, Italian food Chicago, Greek food Chicago, family restaurant, West Randolph, reservations" />
+    <meta name="author" content="Little Lemon Restaurant" />
+    <meta name="theme-color" content="#080807" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="restaurant" />
+    <meta property="og:url" content="https://littlelemon.com/" />
+    <meta property="og:title" content="Little Lemon | Mediterranean Restaurant · Chicago" />
+    <meta property="og:description" content="Sun-kissed flavours of the Mediterranean. A family table rooted in Italian, Greek & Turkish tradition — reimagined for a modern appetite." />
+    <meta property="og:image" content="/og-image.jpg" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Little Lemon | Mediterranean Restaurant · Chicago" />
+    <meta name="twitter:description" content="Sun-kissed flavours of the Mediterranean. Reserve your table at Little Lemon, Chicago." />
+    <meta name="twitter:image" content="/og-image.jpg" />
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://littlelemon.com/" />
+
+    <!-- Fonts (preconnect for speed) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Restaurant",
+      "name": "Little Lemon",
+      "description": "A family-owned Mediterranean restaurant in Chicago rooted in Italian, Greek and Turkish tradition.",
+      "url": "https://littlelemon.com",
+      "telephone": "(312) 555-0192",
+      "email": "hello@littlelemon.com",
+      "servesCuisine": ["Mediterranean", "Italian", "Greek", "Turkish"],
+      "priceRange": "$$",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "742 W Randolph St",
+        "addressLocality": "Chicago",
+        "addressRegion": "IL",
+        "postalCode": "60661",
+        "addressCountry": "US"
+      },
+      "openingHoursSpecification": [
+        { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday"], "opens": "11:30", "closes": "22:00" },
+        { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Friday","Saturday"], "opens": "11:30", "closes": "23:00" },
+        { "@type": "OpeningHoursSpecification", "dayOfWeek": "Sunday", "opens": "12:00", "closes": "21:00" }
+      ],
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5",
+        "reviewCount": "2400"
+      }
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
