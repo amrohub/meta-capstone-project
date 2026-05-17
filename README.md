@@ -1,4 +1,4 @@
-# 🍋 Little Lemon — Table Reservation System
+# 🍋 Little Lemon Website
 
 > **Meta Front-End Developer Capstone Project** — A complete redesign and implementation of the Little Lemon restaurant's table booking experience, built as the final capstone for the [Meta Front-End Development Professional Certificate](https://www.coursera.org/professional-certificates/meta-front-end-developer).
 
