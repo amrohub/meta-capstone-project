@@ -804,87 +804,90 @@ function StepDots({ step }) {
   );
 }
 
-function BookingSection() {
-  const secRef = useReveal();
+/* ─── EXPORTED VALIDATION HELPERS (used by unit tests) ──────── */
+export function validateStep1(form) {
+  const e = {};
+  if (!form.date)  e.date = "Please select a date";
+  if (!form.time)  e.time = "Please select a time";
+  return e;
+}
+
+export function validateStep2(form) {
+  const e = {};
+  if (!form.firstName.trim()) e.firstName = "Required";
+  if (!form.lastName.trim())  e.lastName  = "Required";
+  if (!form.email.trim() || !/\S+@\S+\.\S+/.test(form.email))
+    e.email = "Valid email required";
+  if (!form.phone.trim()) e.phone = "Required";
+  return e;
+}
+
+/* ─── initializeTimes: pure function used by parent + tests ─── */
+export function initializeTimes() {
+  return [
+    { t:"12:00 PM", full:false }, { t:"12:30 PM", full:false },
+    { t:"1:00 PM",  full:true  }, { t:"1:30 PM",  full:false },
+    { t:"2:00 PM",  full:true  }, { t:"2:30 PM",  full:false },
+    { t:"5:00 PM",  full:false }, { t:"5:30 PM",  full:false },
+    { t:"6:00 PM",  full:true  }, { t:"6:30 PM",  full:true  },
+    { t:"7:00 PM",  full:false }, { t:"7:30 PM",  full:true  },
+    { t:"8:00 PM",  full:false }, { t:"8:30 PM",  full:false },
+    { t:"9:00 PM",  full:true  }, { t:"9:30 PM",  full:false },
+  ];
+}
+
+/* ─── updateTimes: returns times for a given date (pure, testable) */
+export function updateTimes(date) {
+  // Weekend evenings are busier — mark more slots full
+  if (!date) return initializeTimes();
+  const day = date.getDay(); // 0=Sun, 6=Sat
+  const isWeekend = day === 0 || day === 6;
+  return initializeTimes().map(slot => ({
+    ...slot,
+    full: slot.full || (isWeekend && parseInt(slot.t) >= 7),
+  }));
+}
+
+/* ─── BOOKING FORM (child component) ───────────────────────── */
+export function BookingForm({ availableTimes, dispatch, onConfirmed }) {
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
-    date:null, time:"", guests:"2", occasion:"",
-    firstName:"", lastName:"", email:"", phone:"", requests:"",
+    date: null, time: "", guests: "2", occasion: "",
+    firstName: "", lastName: "", email: "", phone: "", requests: "",
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [confirmed, setConfirmed] = useState(false);
 
-  const set = (k,v) => setForm(s=>({...s,[k]:v}));
-
-  const v1 = () => { const e={}; if(!form.date) e.date="Please select a date"; if(!form.time) e.time="Please select a time"; return e; };
-  const v2 = () => {
-    const e={};
-    if(!form.firstName.trim()) e.firstName="Required";
-    if(!form.lastName.trim())  e.lastName ="Required";
-    if(!form.email.trim()||!/\S+@\S+\.\S+/.test(form.email)) e.email="Valid email required";
-    if(!form.phone.trim())     e.phone    ="Required";
-    return e;
+  const set = (k, v) => {
+    setForm(s => ({ ...s, [k]: v }));
+    // When date changes, ask parent to update available times
+    if (k === "date") dispatch({ type: "UPDATE_TIMES", date: v });
   };
 
   function next() {
-    const errs = step===1?v1():v2();
-    if(Object.keys(errs).length){ setErrors(errs); return; }
-    setErrors({}); setStep(s=>s+1);
+    const errs = step === 1 ? validateStep1(form) : validateStep2(form);
+    if (Object.keys(errs).length) { setErrors(errs); return; }
+    setErrors({});
+    setStep(s => s + 1);
   }
 
   async function confirm() {
     setLoading(true);
-    await new Promise(r=>setTimeout(r,1400));
-    setLoading(false); setConfirmed(true);
+    await new Promise(r => setTimeout(r, 1400));
+    setLoading(false);
+    onConfirmed(form);
   }
 
   const FL = (txt, opt) => (
     <label style={{ display:"block", fontSize:"0.67rem", fontWeight:600, letterSpacing:"0.1em", textTransform:"uppercase", color:"var(--muted)", marginBottom:"0.5rem" }}>
-      {txt}{opt&&<span style={{ color:"var(--muted2)", fontWeight:300, textTransform:"none", letterSpacing:0 }}> (optional)</span>}
+      {txt}{opt && <span style={{ color:"var(--muted2)", fontWeight:300, textTransform:"none", letterSpacing:0 }}> (optional)</span>}
     </label>
   );
-  const EM = k => errors[k] && <p style={{ fontSize:"0.71rem", color:"#e05252", marginTop:"0.32rem" }}>{errors[k]}</p>;
+  const EM = k => errors[k] && <p data-testid={`error-${k}`} style={{ fontSize:"0.71rem", color:"#e05252", marginTop:"0.32rem" }}>{errors[k]}</p>;
 
   return (
-    <section id="booking" style={{ background:"var(--bg2)", padding:"clamp(4rem,10vw,8rem) clamp(1rem,4vw,2.5rem)" }}>
-      <div style={{ maxWidth:780, margin:"0 auto" }}>
-        <div ref={secRef} className="reveal" style={{ textAlign:"center", marginBottom:"clamp(2rem,4vw,3.5rem)" }}>
-          <p style={{ fontSize:"0.7rem", fontWeight:600, letterSpacing:"0.16em", textTransform:"uppercase", color:"var(--gold)", marginBottom:"1rem" }}>
-            <Calendar size={11} style={{ display:"inline", marginRight:6 }} />Reservations
-          </p>
-          <h2 style={{
-            fontFamily:"var(--serif)", fontWeight:200,
-            fontSize:"clamp(2.25rem,5vw,4.25rem)",
-            lineHeight:1.08, letterSpacing:"-0.02em", color:"var(--text)",
-          }}>
-            Reserve Your<br /><em style={{ fontStyle:"italic", color:"var(--gold)" }}>Table</em>
-          </h2>
-        </div>
-
-        {confirmed ? (
-          <div style={{
-            background:"linear-gradient(145deg,rgba(212,168,67,0.09),rgba(212,168,67,0.04))",
-            border:"1px solid rgba(212,168,67,0.25)", borderRadius:"var(--radius-lg)",
-            padding:"clamp(2rem,5vw,3.5rem)", textAlign:"center",
-            animation:"scaleIn 0.55s var(--ease-spring) both",
-          }}>
-            <div style={{
-              width:60, height:60, borderRadius:"50%", background:"var(--gold)",
-              display:"flex", alignItems:"center", justifyContent:"center",
-              margin:"0 auto 1.75rem",
-              animation:"pulseRing 1.5s ease 0.4s",
-            }}><Check size={26} color="#080807"/></div>
-            <h3 style={{ fontFamily:"var(--serif)", fontWeight:400, fontSize:"1.85rem", letterSpacing:"-0.01em", color:"var(--text)", marginBottom:"0.75rem" }}>You're confirmed!</h3>
-            <p style={{ fontSize:"0.875rem", lineHeight:1.85, fontWeight:300, color:"var(--muted)", maxWidth:420, margin:"0 auto 2rem" }}>
-              Your table is reserved for <strong style={{ color:"var(--text2)" }}>{formatDate(form.date)} at {form.time}</strong> for {form.guests} {form.guests==="1"?"guest":"guests"}. A confirmation is heading to {form.email}.
-            </p>
-            <button className="btn-ghost" onClick={()=>{ setConfirmed(false); setStep(1); setForm({date:null,time:"",guests:"2",occasion:"",firstName:"",lastName:"",email:"",phone:"",requests:""}); }}>
-              Make Another Reservation
-            </button>
-          </div>
-        ) : (
-          <>
+    <div data-testid="booking-form">
+        <>
             <StepDots step={step} />
 
             {step===1 && (
@@ -899,7 +902,7 @@ function BookingSection() {
                   <div style={{ gridColumn:"1/-1" }}>
                     {FL("Select a Time")}
                     <div className="time-grid-inner" style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:6 }}>
-                      {TIMES.map(({t,full})=>(
+                      {availableTimes.map(({t,full})=>(
                         <button key={t} disabled={full} onClick={()=>!full&&set("time",t)} style={{
                           padding:"0.6rem 0.35rem", borderRadius:8, textAlign:"center",
                           fontFamily:"var(--sans)", fontSize:"0.78rem", fontWeight:300,
@@ -1041,6 +1044,66 @@ function BookingSection() {
               </div>
             )}
           </>
+    </div>
+  );
+}
+
+/* ─── BOOKING SECTION (parent — owns availableTimes state) ───── */
+function BookingSection() {
+  const secRef = useReveal();
+  const [availableTimes, setAvailableTimes] = useState(initializeTimes);
+  const [confirmed, setConfirmed]       = useState(false);
+  const [confirmedForm, setConfirmedForm] = useState(null);
+
+  function dispatch({ type, date }) {
+    if (type === "UPDATE_TIMES") setAvailableTimes(updateTimes(date));
+  }
+
+  return (
+    <section id="booking" style={{ background:"var(--bg2)", padding:"clamp(4rem,10vw,8rem) clamp(1rem,4vw,2.5rem)" }}>
+      <div style={{ maxWidth:780, margin:"0 auto" }}>
+        <div ref={secRef} className="reveal" style={{ textAlign:"center", marginBottom:"clamp(2rem,4vw,3.5rem)" }}>
+          <p style={{ fontSize:"0.7rem", fontWeight:600, letterSpacing:"0.16em", textTransform:"uppercase", color:"var(--gold)", marginBottom:"1rem" }}>
+            <Calendar size={11} style={{ display:"inline", marginRight:6 }} />Reservations
+          </p>
+          <h2 style={{
+            fontFamily:"var(--serif)", fontWeight:200,
+            fontSize:"clamp(2.25rem,5vw,4.25rem)",
+            lineHeight:1.08, letterSpacing:"-0.02em", color:"var(--text)",
+          }}>
+            Reserve Your<br /><em style={{ fontStyle:"italic", color:"var(--gold)" }}>Table</em>
+          </h2>
+        </div>
+
+        {confirmed && confirmedForm ? (
+          <div style={{
+            background:"linear-gradient(145deg,rgba(212,168,67,0.09),rgba(212,168,67,0.04))",
+            border:"1px solid rgba(212,168,67,0.25)", borderRadius:"var(--radius-lg)",
+            padding:"clamp(2rem,5vw,3.5rem)", textAlign:"center",
+            animation:"scaleIn 0.55s var(--ease-spring) both",
+          }}>
+            <div style={{
+              width:60, height:60, borderRadius:"50%", background:"var(--gold)",
+              display:"flex", alignItems:"center", justifyContent:"center",
+              margin:"0 auto 1.75rem",
+              animation:"pulseRing 1.5s ease 0.4s",
+            }}><Check size={26} color="#080807"/></div>
+            <h3 style={{ fontFamily:"var(--serif)", fontWeight:400, fontSize:"1.85rem", letterSpacing:"-0.01em", color:"var(--text)", marginBottom:"0.75rem" }}>You're confirmed!</h3>
+            <p style={{ fontSize:"0.875rem", lineHeight:1.85, fontWeight:300, color:"var(--muted)", maxWidth:420, margin:"0 auto 2rem" }}>
+              Your table is reserved for{" "}
+              <strong style={{ color:"var(--text2)" }}>{formatDate(confirmedForm.date)} at {confirmedForm.time}</strong>{" "}
+              for {confirmedForm.guests} {confirmedForm.guests==="1"?"guest":"guests"}. A confirmation is heading to {confirmedForm.email}.
+            </p>
+            <button className="btn-ghost" onClick={()=>{ setConfirmed(false); setConfirmedForm(null); }}>
+              Make Another Reservation
+            </button>
+          </div>
+        ) : (
+          <BookingForm
+            availableTimes={availableTimes}
+            dispatch={dispatch}
+            onConfirmed={(form) => { setConfirmedForm(form); setConfirmed(true); }}
+          />
         )}
       </div>
     </section>
